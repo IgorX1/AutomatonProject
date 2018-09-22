@@ -23,8 +23,13 @@ public class Automaton {
     /*The set of final states of the automaton*/
     private LinkedList<String> finish = new LinkedList<>();
 
-    /*Current state of the automaton. Initial value is 0 (= q0)*/
+    /*Current state of the automaton. Initial value is 0 (= q0)
+    * Actually, represents the current vertex of the
+    * graph representation of this automaton, which we are currently on*/
     private String state = "0";
+
+    /*q0 vertex*/
+    private static final String initialState = "0";
 
     public Automaton(String path){
         try{
@@ -87,12 +92,55 @@ public class Automaton {
         return false;
     }
 
+    /*Checks if the automaton accepts the words of structure w=w1w0w2*/
+    public boolean doesAcceptWordOfW1W0W2Structure(String word){
+        //loop through each and every vertex of the graph
+        for(String vertex : sigma.keySet()){
+            /*
+            * w=w1w0w2:
+            * We can't take qo, because in this case we will only be able
+            * to process the words of type w = w0w2;
+            * In case of dead-end vertices we limit ourselves in
+            * processing the words of any type except of type w = w1w0
+            * */
+            if(vertex==initialState || isDeadEndVertex(vertex)){
+                continue;
+            }
+
+            state = vertex;
+
+            if(doesAcceptWord(word)){
+
+            }
+
+        }
+        return false;
+    }
+
     private int getCharIndex(String c) {
         return alphabet.indexOf(c);
     }
 
     private boolean isFinalState(String st){
         return finish.contains(st);
+    }
+
+    /*Checks if vertex is a dead-end vertex*/
+    private boolean isDeadEndVertex(String vertex){
+        //Checking if all elements of the list are equal
+        for(String s : sigma.get(vertex)){
+            if(!s.equals(sigma.get(0))){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /*Checks if there exists a walk between vertex and
+    * initial vertex qo in this graph*/
+    private boolean isConnectedWithq0(String vertex){
+
+        return false;
     }
 
 }
