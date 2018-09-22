@@ -23,6 +23,9 @@ public class Automaton {
     /*The set of final states of the automaton*/
     private LinkedList<String> finish = new LinkedList<>();
 
+    /*Current state of the automaton. Initial value is 0 (= q0)*/
+    private String state = "0";
+
     public Automaton(String path){
         try{
             BufferedReader reader = new BufferedReader(new FileReader(path));
@@ -52,7 +55,7 @@ public class Automaton {
                     if(!res.equals(""))
                     ls.add(res);
                 }
-                sigma.put(q,ls);
+                sigma.put(q.trim(),ls);
 
                 line = reader.readLine();
             }
@@ -63,4 +66,37 @@ public class Automaton {
         }
 
     }
+
+    public boolean doesAcceptWord(String word){
+        char cur;
+        StringBuilder w = new StringBuilder(word);
+        while(w.length()>0){
+            //pop the first character from the 'input stream'
+            cur = w.charAt(0);//get the first character
+            w.deleteCharAt(0);
+
+            try{
+                //boolean containskey = sigma.containsKey("0");
+                //LinkedList<String> st = sigma.get(state);
+                //String st1 = st.get(getCharIndex(String.valueOf(cur)));
+                state = sigma.get(state).get(getCharIndex(String.valueOf(cur)));
+
+            }catch (ArrayIndexOutOfBoundsException exc){
+                return false;
+            }
+        }
+
+        if(isFinalState(state)) return true;
+
+        return false;
+    }
+
+    private int getCharIndex(String c) {
+        return alphabet.indexOf(c);
+    }
+
+    private boolean isFinalState(String st){
+        return finish.contains(st);
+    }
+
 }
