@@ -76,11 +76,7 @@ public class Automaton {
             w.deleteCharAt(0);
 
             try{
-                //boolean containskey = sigma.containsKey("0");
-                //LinkedList<String> st = sigma.get(state);
-                //String st1 = st.get(getCharIndex(String.valueOf(cur)));
                 state = sigma.get(state).get(getCharIndex(String.valueOf(cur)));
-
             }catch (ArrayIndexOutOfBoundsException exc){
                 return false;
             }
