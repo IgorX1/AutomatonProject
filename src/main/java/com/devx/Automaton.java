@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.io.BufferedInputStream;
 
 /*
 * Automaton entity represents NDF automaton in the computer memory
@@ -90,21 +89,37 @@ public class Automaton {
             try{
                 LinkedList<String> r1 = sigma.get(state);
                 int ind = getCharIndex(String.valueOf(cur));
+                /*For the case when state becomes -1*/
+                if(r1==null) continue;
                 String r2 = r1.get(ind);
                 //state = sigma.get(state).get(getCharIndex(String.valueOf(cur)));
                 state = r2;
             }catch (ArrayIndexOutOfBoundsException exc){
                 return false;
-            }//catch (NullPointerException exc){
-                //return false;
-            //}catch (IndexOutOfBoundsException exc){
-               // return false;
-            //}
+            }catch (NullPointerException exc){
+                return false;
+            }catch (IndexOutOfBoundsException exc){
+                return false;
+            }
         }
 
+        //to prevent mistake when calculating isFinalState for -1
+        if(state.equals(error)) return false;
+
+        /*
+        * Even in case when the vertex is not final,
+        * still the word may be accepted.
+        * This will happen in case when a subtree, which
+        * starts from the current vertex contains final vertices
+        * (w2 will be concatenated and will lead to final state)
+        * */
         if(isFinalState(state)) return true;
+        else if(doesSubtreeContainFinalVertices(state)){
+            return true;
+        }
 
         return false;
+
     }
 
     /*Checks if the automaton accepts the words of structure w=w1w0w2*/
@@ -125,7 +140,7 @@ public class Automaton {
             state = vertex;
 
             if(doesAcceptWord(word)){
-                if(isConnectedWithQ0(vertex)){
+                if(isConnectedWithQ0(vertex) && doesSubtreeContainFinalVertices(vertex)){
                     return true;
                 }
             }
@@ -181,6 +196,45 @@ public class Automaton {
 
                 n = i.next();
                 if(n.equals(vertex)) return true;
+
+                // Else continue the algorithm BFS
+                if(!visited.get(n)){
+                    visited.put(n, true);
+                    queue.add(n);
+                }
+            }
+        }
+
+        //We reach this place in case when BFS is finished without finding vertex
+        return false;
+    }
+
+    /*Checks if the subtree, which starts from the @param vertex,
+    * contains at least one final vertex */
+    private boolean doesSubtreeContainFinalVertices(String vertex){
+        //set all elements are false by default
+        //boolean[] visited = new boolean[sigma.keySet().size()];
+        HashMap<String, Boolean> visited = new HashMap<>();
+        for(String s : sigma.keySet()){
+            visited.put(s, false);
+        }
+
+        // Create a queue for BFS
+        LinkedList<String> queue = new LinkedList<>();
+
+        //MArk the current vertex as visited and add it to the queue
+        visited.put(vertex,true);
+        queue.add(vertex);
+
+        String s,n;
+        Iterator<String> i;
+        while(queue.size()!=0){
+            s=queue.poll();
+            i = getAllAdjusent(s);
+            while(i.hasNext()){
+
+                n = i.next();
+                if(isFinalState(n)) return true;
 
                 // Else continue the algorithm BFS
                 if(!visited.get(n)){

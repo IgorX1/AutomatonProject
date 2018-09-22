@@ -3,23 +3,19 @@ package com.devx;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
     public static void main( String[] args )
     {
-        //try {
+        try {
             System.out.println("Konobas Igor TTP-31");
             Automaton automaton = new Automaton("automaton.txt");
             String w0 = getWord();
             if (w0 == null) return;
             System.out.println(automaton.doesAcceptWordOfW1W0W2Structure(w0) ? "YES" : "NO");
-        //}catch (Exception exc){
-            //System.out.println(exc.getMessage());
-        //}
+        }catch (Exception exc){
+            System.out.println("ERROR:" + exc.getMessage());
+        }
     }
 
     public static String getWord(){
