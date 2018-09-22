@@ -62,6 +62,11 @@ public class Automaton {
                     if(!res.equals(""))
                     ls.add(res);
                 }
+
+                if(ls.size()!=alphabet.size()){
+                    throw new RuntimeException("Mistake in the input text file found");
+                }
+
                 sigma.put(q.trim(),ls);
 
                 line = reader.readLine();
@@ -83,12 +88,18 @@ public class Automaton {
             w.deleteCharAt(0);
 
             try{
-                state = sigma.get(state).get(getCharIndex(String.valueOf(cur)));
+                LinkedList<String> r1 = sigma.get(state);
+                int ind = getCharIndex(String.valueOf(cur));
+                String r2 = r1.get(ind);
+                //state = sigma.get(state).get(getCharIndex(String.valueOf(cur)));
+                state = r2;
             }catch (ArrayIndexOutOfBoundsException exc){
                 return false;
-            }catch (NullPointerException exc){
-                return false;
-            }
+            }//catch (NullPointerException exc){
+                //return false;
+            //}catch (IndexOutOfBoundsException exc){
+               // return false;
+            //}
         }
 
         if(isFinalState(state)) return true;
