@@ -3,10 +3,7 @@ package com.devx;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.io.BufferedInputStream;
 
 /*
@@ -30,6 +27,11 @@ public class Automaton {
 
     /*q0 vertex*/
     private static final String initialState = "0";
+
+    /*Stands for UNDEFINED state of the automaton
+     * or for unknown character, which can't be processed
+     * by the automaton*/
+    private static final String error = "-1";
 
     public Automaton(String path){
         try{
@@ -84,6 +86,8 @@ public class Automaton {
                 state = sigma.get(state).get(getCharIndex(String.valueOf(cur)));
             }catch (ArrayIndexOutOfBoundsException exc){
                 return false;
+            }catch (NullPointerException exc){
+                return false;
             }
         }
 
@@ -110,7 +114,9 @@ public class Automaton {
             state = vertex;
 
             if(doesAcceptWord(word)){
-
+                if(isConnectedWithQ0(vertex)){
+                    return true;
+                }
             }
 
         }
@@ -137,10 +143,52 @@ public class Automaton {
     }
 
     /*Checks if there exists a walk between vertex and
-    * initial vertex qo in this graph*/
-    private boolean isConnectedWithq0(String vertex){
+    * initial vertex qo in this graph.
+    * BFS is used for search*/
+    private boolean isConnectedWithQ0(String vertex){
 
+        //set all elements are false by default
+        //boolean[] visited = new boolean[sigma.keySet().size()];
+        HashMap<String, Boolean> visited = new HashMap<>();
+        for(String s : sigma.keySet()){
+            visited.put(s, false);
+        }
+
+        // Create a queue for BFS
+        LinkedList<String> queue = new LinkedList<>();
+
+        //MArk the current vertex as visited and add it to the queue
+        visited.put(initialState,true);
+        queue.add(initialState);
+
+        String s,n;
+        Iterator<String> i;
+        while(queue.size()!=0){
+            s=queue.poll();
+            i = getAllAdjusent(s);
+            while(i.hasNext()){
+
+                n = i.next();
+                if(n.equals(vertex)) return true;
+
+                // Else continue the algorithm BFS
+                if(!visited.get(n)){
+                    visited.put(n, true);
+                    queue.add(n);
+                }
+            }
+        }
+
+        //We reach this place in case when BFS is finished without finding vertex
         return false;
+    }
+
+    private Iterator<String> getAllAdjusent(String vertex){
+        HashSet<String> set = new HashSet<>();
+        for(String s : sigma.get(vertex)){
+            if(!s.equals(error)) set.add(s);
+        }
+        return  set.iterator();
     }
 
 }

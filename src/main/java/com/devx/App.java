@@ -15,7 +15,7 @@ public class App
         Automaton automaton = new Automaton("automaton.txt");
         String w0 = getWord();
         if(w0==null) return;
-        System.out.println(automaton.doesAcceptWord(w0) ? "YES" : "NO");
+        System.out.println(automaton.doesAcceptWordOfW1W0W2Structure(w0) ? "YES" : "NO");
 
     }
 
