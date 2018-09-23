@@ -79,6 +79,9 @@ public class Automaton {
     }
 
     public boolean doesAcceptWord(String word){
+
+        if(word.length()==0) return false;
+
         char cur;
         StringBuilder w = new StringBuilder(word);
         while(w.length()>0){
@@ -133,14 +136,14 @@ public class Automaton {
             * In case of dead-end vertices we limit ourselves in
             * processing the words of any type except of type w = w1w0
             * */
-            if(vertex==initialState || isDeadEndVertex(vertex)){
+            if(vertex.equals(initialState) || isDeadEndVertex(vertex)){
                 continue;
             }
 
             state = vertex;
 
             if(doesAcceptWord(word)){
-                if(isConnectedWithQ0(vertex) && doesSubtreeContainFinalVertices(vertex)){
+                if(isConnectedWithQ0(state) && doesSubtreeContainFinalVertices(state)){
                     return true;
                 }
             }
